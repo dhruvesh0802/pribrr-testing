@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  pribrr-backend:
+    image: pribrr-backend:latest
+    ports:
+      - "9080:9080"  # Adjust the port mapping based on your application needs
+    environment:
+      - NODE_ENV=production
+    # Add more configuration options as needed
+
+networks:
+  # Define networks if required
+
+volumes:
+  # Define volumes if required
