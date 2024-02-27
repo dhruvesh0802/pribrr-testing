@@ -9,8 +9,8 @@ services:
       - NODE_ENV=production
     # Add more configuration options as needed
 
-networks:
+#networks:
   # Define networks if required
 
-volumes:
+#volumes:
   # Define volumes if required
