@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,15 +19,28 @@ jobs:
       - name: Build Docker Image
         run: docker build --file Dockerfile --tag ghcr.io/${{ github.actor }}/pribrr-backend:latest .
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        
       - name: Log in to Ubuntu Server via SSH
-        uses: appleboy/ssh-action@master
+        uses: actions/checkout@v3  # Use actions/checkout@v3 for SSH key retrieval
         with:
-          host: ${{ secrets.SSH_HOST_MASTER }}
-          username: ${{ secrets.SSH_USER_MASTER }}
-          key: ${{ secrets.SSH_KEY_MASTER }}
-          script: |
-            docker login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.DOCKER_TOKEN }}"
-            docker pull ghcr.io/${{ github.actor }}/pribrr-backend:latest
-            cd /var/www/html
-            docker-compose down
-            docker-compose up -d --force-recreate
+          persist-credentials: false  # Optionally disable persisting credentials
+        env:
+          GITHUB_ACTION_REF: ${{ github.ref }}  
+          SSH_KEY: ${{ secrets.SSH_KEY_MASTER }}
+
+      - name: Deploy to Ubuntu Server
+        run: |
+          # Establish SSH connection using the retrieved SSH key
+          ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} -i ${{ steps.checkout.outputs.ssh-key }} << EOF
+          docker login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.DOCKER_TOKEN }}"
+          docker pull ghcr.io/${{ github.actor }}/pribrr-backend:latest
+          cd /var/www/html
+          docker-compose down
+          docker-compose up -d --force-recreate
