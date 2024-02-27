@@ -35,7 +35,7 @@ jobs:
 
       - name: Deploy to Ubuntu Server
         run: |
-          ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker login ghcr.io -u '${{ github.actor }}' -p '${{ secrets.DOCKER_TOKEN }}'"
+          ssh ubuntu@107.21.202.114 "docker login ghcr.io -u '${{ github.actor }}' -p '${{ secrets.DOCKER_TOKEN }}'"
           ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker pull ghcr.io/${{ github.actor }}/backend-java-app:latest"
           ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker-compose -f /var/www/html/docker-compose.yml down"
           ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker-compose -f /var/www/html/docker-compose.yml up -d"
