@@ -28,19 +28,17 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Log in to Ubuntu Server via SSH
-        uses: actions/checkout@v3  # Use actions/checkout@v3 for SSH key retrieval
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          persist-credentials: false  # Optionally disable persisting credentials
-        env:
-          GITHUB_ACTION_REF: ${{ github.ref }}  
-          SSH_KEY: ${{ secrets.SSH_KEY_MASTER }}
+         ssh-private-key: ${{ secrets.SSH_KEY_MASTER }}
+         ssh-config: "StrictHostKeyChecking no"
 
       - name: Deploy to Ubuntu Server
         run: |
-          # Establish SSH connection using the retrieved SSH key
-          ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} ${{ steps.checkout.outputs.ssh-key }}
-          docker login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.DOCKER_TOKEN }}"
-          docker pull ghcr.io/${{ github.actor }}/pribrr-backend:latest
-          cd /var/www/html
-          docker-compose down
-          docker-compose up -d --force-recreate
+         # Establish SSH connection using the retrieved SSH key
+         echo "${{ secrets.SSH_KEY_MASTER }}" > ssh_key.pem
+         chmod 600 ssh_key.pem
+         ssh -i ssh_key.pem ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker login ghcr.io -u '${{ github.actor }}' -p '${{ secrets.DOCKER_TOKEN }}'"
+         ssh -i ssh_key.pem ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker pull ghcr.io/${{ github.actor }}/pribrr-backend:latest"
+         ssh -i ssh_key.pem ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "cd /var/www/html && docker-compose down && docker-compose up -d --force-recreate"
+
