@@ -38,11 +38,9 @@ jobs:
       - name: Deploy to Ubuntu Server
         run: |
           # Establish SSH connection using the retrieved SSH key
-          ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} -i ${{ steps.checkout.outputs.ssh-key }} << 'EOF'
+          ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} -i ${{ steps.checkout.outputs.ssh-key }} << EOF
           docker login ghcr.io -u "${{ github.actor }}" -p "${{ secrets.DOCKER_TOKEN }}"
           docker pull ghcr.io/${{ github.actor }}/pribrr-backend:latest
           cd /var/www/html
           docker-compose down
           docker-compose up -d --force-recreate
-          EOF
-
