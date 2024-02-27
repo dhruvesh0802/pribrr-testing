@@ -35,9 +35,9 @@ jobs:
 
       - name: Deploy to Ubuntu Server
         run: |
-          echo "whoami"
+          whoami
           echo "test"
-          sudo -u ubuntu "docker login ghcr.io -u '${{ github.actor }}' -p '${{ secrets.DOCKER_TOKEN }}'"
+          sh "docker login ghcr.io -u '${{ github.actor }}' -p '${{ secrets.DOCKER_TOKEN }}'"
           echo "test0"
           ssh -i ${{ secrets.SSH_KEY_MASTER }} ubuntu@107.21.202.114 "docker login ghcr.io -u '${{ github.actor }}' -p '${{ secrets.DOCKER_TOKEN }}'"
           echo "test1"
