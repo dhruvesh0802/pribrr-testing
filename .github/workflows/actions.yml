@@ -35,9 +35,9 @@ jobs:
 
       - name: Deploy to Ubuntu Server
         run: |
-        
+         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} uptime
+         
          # Establish SSH connection using the retrieved SSH key
-         ssh -o StrictHostKeyChecking=no ubuntu@something.example.com uptime
          echo "${{ secrets.SSH_KEY_MASTER }}" > ssh_key.pem
          chmod 600 ssh_key.pem
          ssh -i ssh_key.pem ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker login ghcr.io -u '${{ github.actor }}' -p '${{ secrets.DOCKER_TOKEN }}'"
