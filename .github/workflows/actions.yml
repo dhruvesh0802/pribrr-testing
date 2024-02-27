@@ -30,17 +30,12 @@ jobs:
       - name: Log in to Ubuntu Server via SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-         ssh-private-key: ${{ secrets.SSH_KEY_MASTER }}
-         ssh-config: "StrictHostKeyChecking no"
+          ssh-private-key: ${{ secrets.SSH_KEY_MASTER }}
+          ssh-config: "StrictHostKeyChecking no"
 
       - name: Deploy to Ubuntu Server
         run: |
-         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} uptime
-         
-         # Establish SSH connection using the retrieved SSH key
-         echo "${{ secrets.SSH_KEY_MASTER }}" > ssh_key.pem
-         chmod 600 ssh_key.pem
-         ssh -i ssh_key.pem ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker login ghcr.io -u '${{ github.actor }}' -p '${{ secrets.DOCKER_TOKEN }}'"
-         ssh -i ssh_key.pem ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker pull ghcr.io/${{ github.actor }}/pribrr-backend:latest"
-         ssh -i ssh_key.pem ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "cd /var/www/html && docker-compose down && docker-compose up -d --force-recreate"
-
+          ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker login ghcr.io -u '${{ github.actor }}' -p '${{ secrets.DOCKER_TOKEN }}'"
+          ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker pull ghcr.io/${{ github.actor }}/backend-java-app:latest"
+          ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker-compose -f /var/www/html/docker-compose.yml down"
+          ssh ${{ secrets.SSH_USER_MASTER }}@${{ secrets.SSH_HOST_MASTER }} "docker-compose -f /var/www/html/docker-compose.yml up -d"
