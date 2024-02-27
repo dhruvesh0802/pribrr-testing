@@ -1,0 +1,57 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.3'
+	id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'com.pb'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.testng:testng:7.1.0'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'mysql:mysql-connector-java'
+	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
+
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	implementation('io.springfox:springfox-swagger-ui:2.9.2')
+	implementation('io.springfox:springfox-swagger2:2.9.2')
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	/*implementation 'org.springframework.boot:spring-boot-starter-data-redis'*/
+
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+
+	implementation 'com.amazonaws:aws-java-sdk:1.11.428'
+	implementation "net.rakugakibox.spring.boot:orika-spring-boot-starter:1.5.0"
+	implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.3'
+	implementation 'com.stripe:stripe-java:20.48.0'
+
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+//For, Remove plain.jar
+jar {
+	enabled = false
+}

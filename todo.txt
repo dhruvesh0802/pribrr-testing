@@ -1,0 +1,8 @@
+- Database migration tool (Flyway or Liquibase)
+- Circuit breaker
+- Spring cloud
+- Caching (Ehcache or Redis)
+- Some Actuator stuffs
+- Swagger
+- Thyme-leaf for email template
+- Test cases
