@@ -1,57 +1,29 @@
-  name: Build and deploy api
-  on:
-    push:
-      branches: [ master ]
-  env:
-    REGISTRY: ghcr.io
-    IMAGE_NAME: dhruvesh0802/pribrr-testing
-  jobs:
-    build-and-push-image:
-      runs-on: ubuntu-latest
-      permissions:
-        contents: read
-        packages: write
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v2
-        - name: Log in to the Container registry
-          uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-          with:
-            registry: ${{ env.REGISTRY }}
-            username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
-        - name: Extract metadata (tags, labels) for Docker
-          id: meta
-          uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-          with:
-            images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        - name: Build and push Docker image
-          uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-          with:
-            context: .
-            push: true
-            build-args: |
-              APP_NAME=api-master
-              NODE_ENV=production
-            tags: ${{ steps.meta.outputs.tags }}
-            labels: ${{ steps.meta.outputs.labels }}
-        - name: Configure SSH
-          run: |
-            mkdir -p ~/.ssh/
-            echo "$SSH_KEY" > ~/.ssh/dev.key
-            chmod 600 ~/.ssh/dev.key
-            cat >>~/.ssh/config <<END
-              Host stage
-              HostName $SSH_HOST
-              User $SSH_USER
-              IdentityFile ~/.ssh/dev.key
-              StrictHostKeyChecking no
-            END
-          env:
-            SSH_USER: ${{ secrets.SSH_USER_MASTER }}
-            SSH_KEY: ${{ secrets.SSH_KEY_MASTER }}
-            SSH_HOST: ${{ secrets.SSH_HOST_MASTER }}
-        - name: Deploy Stage Build
-          run: |
-            ssh stage 'echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin'
-            ssh stage 'cd /var/www/html/api; docker system prune -f; docker-compose pull; docker-compose up -d --force-recreate'
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Install zip
+      run: sudo apt-get install zip
+      
+    - name: Zip files
+      run: zip -r pb-web-cms.zip ./
+
+    - name: Configure AWS credentials
+      run: aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} && aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: Copy to S3
+      run: aws s3 cp pb-web-cms.zip s3://pb-web/pb-web-cms/pb-web-cms.zip
+
+    env:
+      AWS_DEFAULT_REGION: us-east-1
