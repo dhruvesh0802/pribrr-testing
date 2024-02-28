@@ -4,7 +4,7 @@
       branches: [ master ]
   env:
     REGISTRY: ghcr.io
-    IMAGE_NAME: pribrapp/api
+    IMAGE_NAME: dhruvesh0802/pribrr-testing
   jobs:
     build-and-push-image:
       runs-on: ubuntu-latest
