@@ -35,5 +35,6 @@ jobs:
 
       - name: Deploy Stage Build
         run: |
+          mkdir file
           ssh stage 'echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin'
           ssh stage 'cd /var/www/html/api; docker system prune -f; docker-compose pull; docker-compose up -d --force-recreate'
