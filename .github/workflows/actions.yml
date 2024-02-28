@@ -1,4 +1,4 @@
-  name: Build and deploy admin
+  name: Build and deploy api
   on:
     push:
       branches: [ master ]
