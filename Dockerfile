@@ -15,3 +15,4 @@ ENV APP_NAME=${APP_NAME}
 ENV PACKAGE=${PACKAGE}
 ENV JAVA_OPTS=""
 CMD exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -Dspring.profiles.active=$PROFILE -XX:+UseSerialGC -Xss512k -XX:MaxRAM=600m -jar /app/${APP_NAME}.${PACKAGE}
+# coment
